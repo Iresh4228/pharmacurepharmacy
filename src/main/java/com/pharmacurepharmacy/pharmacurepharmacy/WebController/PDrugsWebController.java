@@ -1,45 +1,58 @@
 package com.pharmacurepharmacy.pharmacurepharmacy.WebController;
 
 
+import com.pharmacurepharmacy.pharmacurepharmacy.Model.DCategory;
+import com.pharmacurepharmacy.pharmacurepharmacy.Model.DrugBrand;
 import com.pharmacurepharmacy.pharmacurepharmacy.Model.PDrugs;
+import com.pharmacurepharmacy.pharmacurepharmacy.PharmaDTO.pDrugsDTO;
+import com.pharmacurepharmacy.pharmacurepharmacy.Service.DCategoryService;
+import com.pharmacurepharmacy.pharmacurepharmacy.Service.DrugBrandService;
 import com.pharmacurepharmacy.pharmacurepharmacy.Service.PDrugsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
-@RequestMapping("/drugs")
+@RequestMapping()
 public class PDrugsWebController {
 
-//    private PDrugsService pDrugsService;
+
+    @Autowired
+  private PDrugsService pDrugsService;
+    @Autowired
+    private DCategoryService dCategoryService;
+    @Autowired
+    private DrugBrandService drugBrandService;
 //
 //    @Autowired
 //    public PDrugsWebController(PDrugsService pDrugsService){
 //        this.pDrugsService = pDrugsService;
 //    }
 //
-//    //add mapping for "/druglist"
-//    @RequestMapping("/druglist")
-//    public String getDrugs(Model model) {
+    //add mapping for "/druglist"
+    @RequestMapping("/druglist")
+    public String getDrugs(Model model) {
+
+
+        List<pDrugsDTO> pDrugs = pDrugsService.getAllByNames();
+
+        model.addAttribute("drugs",pDrugs);
+
+        //return view
+        return "list-book";
+
+    }
+//    @GetMapping("/showFormForAddDrugs")
+//    public String saveDrugs(Model theModel, PDrugs pDrugs) {
 //
+//        theModel.addAttribute("pDrugs",pDrugs);
 //
-//        List<PDrugs> pDrugs = pDrugsService.getAllDrugs();
-//
-//        model.addAttribute("drugs",pDrugs);
-//
-//        //return view
-//        return "drugs/drugs-list";
-//
-//    }
-//    @GetMapping("/showFormForAdd")
-//    public String saveDrugs(Model theModel) {
-//        PDrugs pDrugs = new PDrugs();
-//        theModel.addAttribute("pdrug",pDrugs);
-//
-//        return "drugs/drugs-form";
+//        return "add-book";
 //    }
 //
 //
@@ -75,4 +88,19 @@ public class PDrugsWebController {
 //        return "redirect:/drugs/list";
 //
 //    }
+
+    @GetMapping("/showFormForAddDrugs")
+    public String addnewdrug(PDrugs pDrugs, Model model) {
+        model.addAttribute("category",dCategoryService .getAllDrugCategories());
+        model.addAttribute("brands",drugBrandService.getAllDrugBrands());
+        return"add-book";
+    }
+    @PostMapping("/addnewpdrug")
+    public String addnewpdrug(@Valid PDrugs pDrugs, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "add-book";
+        }
+        pDrugsService.saveDrug(pDrugs);
+        return "redirect:/viewbrand";
+    }
 }
