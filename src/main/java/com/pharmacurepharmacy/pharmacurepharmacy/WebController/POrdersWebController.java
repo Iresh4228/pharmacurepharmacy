@@ -30,6 +30,13 @@ public class POrdersWebController {
 
     }
 
+    @GetMapping("/")
+    public String showIndex() {
+
+        return "index";
+
+    }
+
     @GetMapping("/showFormForAdd")
     public String saveOrders(Model theModel) {
         POrders pOrders = new POrders();
